@@ -9,6 +9,7 @@
 #              with plenv.
 #              HOME and environment setup must be customized for environment.
 #              See also perldoc Starman and Server::Starter.
+#              Repository: https://github.com/mla/starman-init
 #
 # pidfile: /var/run/starman.pid
 

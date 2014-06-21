@@ -11,3 +11,6 @@ Features/assumptions:
 - Expects a local Perl install using plenv
 
 See also perldoc Starman and Server::Starter.
+
+Repository:
+https://github.com/mla/starman-init
