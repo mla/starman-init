@@ -1,0 +1,146 @@
+#!/bin/bash
+#
+# starman      RHEL/CENTOS init script for Starman web server
+#
+# chkconfig: 345 56 50
+# description: Runs the Starman web server in production environment.
+#              Uses start_server superdaemon for graceful restarts and
+#              runs as user/group "nobody." Expects local Perl install
+#              with plenv.
+#              HOME and environment setup must be customized for environment.
+#              See also perldoc Starman and Server::Starter.
+#
+# pidfile: /var/run/starman.pid
+
+# app settings
+HOME=/home/myhome
+APP_HOME=$HOME/sites/myapp
+APP=$APP_HOME/app.psgi
+APP_NAME=`basename $0`
+START_SERVER=$APP_HOME/vendor/perl5/bin/start_server
+STARMAN=$APP_HOME/vendor/perl5/bin/starman
+PLACK_ENV=deployment
+PORT=5000
+WORKERS=32
+USER=nobody
+GROUP=nobody
+
+PID_FILE=/var/run/$APP_NAME.pid
+STATUS_FILE=/var/run/$APP_NAME.status
+LOCK_FILE=/var/lock/subsys/$APP_NAME
+LOGDIR=/var/log/$APP_NAME
+
+cd $HOME || exit 3 
+
+# Use local site perl
+export PATH=$HOME/.plenv/bin:/sbin:/bin:/usr/bin:/usr/sbin
+eval "$(plenv init -)"
+
+# Source function library.
+. /etc/init.d/functions
+
+# Get config.
+test -f /etc/sysconfig/network && . /etc/sysconfig/network
+
+# Check that we are root
+[ `id -u` = 0 ] || { echo "must be root"; exit 1; }
+
+# Check that networking is up.
+[ "${NETWORKING}" = "yes" ] || exit 0
+
+RETVAL=0
+
+start(){
+    echo -n $"Starting $APP_NAME: "
+
+    mkdir -p $LOGDIR
+
+    daemon --pidfile $PID_FILE \
+      $START_SERVER \
+        --interval=5 \
+        --port=$PORT \
+        --signal-on-hup=QUIT \
+        --signal-on-term=QUIT \
+        --pid-file=$PID_FILE \
+        --status-file=$STATUS_FILE \
+        --backlog=1024 \
+        -- \
+        $STARMAN \
+          --preload-app \
+          --workers $WORKERS \
+          --user $USER \
+          --group $GROUP \
+          --error-log $LOGDIR/error.log \
+          --access-log $LOGDIR/access.log \
+          --env $PLACK_ENV \
+          $APP \
+          &
+
+    RETVAL=$?
+    echo
+    touch $LOCK_FILE
+    return $RETVAL
+}
+
+stop(){
+    echo -n $"Stopping $APP_NAME: "
+    killproc -p $PID_FILE $APP_NAME
+    RETVAL=$?
+    echo
+    rm -f $LOCK_FILE
+    return $RETVAL
+}
+
+graceful(){
+    if [ -s $PID_FILE ]; then
+      echo -n $"Gracefully restarting $APP_NAME: "
+      $START_SERVER \
+        --pid-file $PID_FILE \
+        --status-file $STATUS_FILE \
+        --restart
+      RETVAL=$?
+      echo
+      return $RETVAL
+    else
+      echo $"Not running."
+      start
+    fi
+}
+
+restart(){
+    stop
+    start
+}
+
+condrestart(){
+    [ -e $LOCK_FILE ] && restart
+    return 0
+}
+
+
+# See how we were called.
+case "$1" in
+    start)
+ start
+ ;;
+    stop)
+ stop
+ ;;
+    status)
+ status -p $PID_FILE $APP_NAME
+ ;;
+    graceful)
+ graceful 
+ ;;
+    restart)
+ restart
+ ;;
+    condrestart)
+ condrestart
+ ;;
+    *)
+ echo $"Usage: $0 {start|stop|status|graceful|restart|condrestart|reload}"
+ RETVAL=1
+esac
+
+exit $RETVAL
