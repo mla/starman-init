@@ -3,7 +3,7 @@
 # starman      RHEL/CENTOS init script for Starman web server
 #
 # chkconfig: 345 56 50
-# description: Runs the Starman web server in production environment.
+# description: Runs the Starman web server in production environment. 
 #              Uses start_server superdaemon for graceful restarts and
 #              runs as user/group "nobody." Expects local Perl install
 #              with plenv.
