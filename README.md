@@ -9,7 +9,7 @@ Applies all suggestions from the docs, including:
 - Expects a local Perl install using plenv
 
 Script requires customization for specific application and environment.
-See also perldoc Starman and Server::Starter.
+See also:
 
 - [starman](http://search.cpan.org/dist/Starman/script/starman)
 - [start_server](http://search.cpan.org/dist/Server-Starter/start_server)
