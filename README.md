@@ -1,7 +1,7 @@
 starman-init
 ============
 
-RHEL/CENTOS init script for Starman web server in production environments
+RHEL/CentOS init script for Starman web server in production environments
 
 Attempts to implement all best-practices, including:
 - Uses start_server superdaemon for graceful restarts
