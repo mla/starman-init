@@ -11,8 +11,8 @@ Applies all suggestions from the docs, including:
 Script requires customization for specific application and environment.
 See also perldoc Starman and Server::Starter.
 
-  [starman](http://search.cpan.org/dist/Starman/script/starman)
-  [start_server](http://search.cpan.org/dist/Server-Starter/start_server)
+- [starman](http://search.cpan.org/dist/Starman/script/starman)
+- [start_server](http://search.cpan.org/dist/Server-Starter/start_server)
 
 Repository:
 https://github.com/mla/starman-init
