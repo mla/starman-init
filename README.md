@@ -8,7 +8,7 @@ Applies all recommended best-practices from the docs, including:
 - Runs server as unprivileged user/group "nobody"
 - Expects a local Perl install using plenv
 
-Script should be customized for specific application and environment.
+Script requires customization for specific application and environment.
 See also perldoc Starman and Server::Starter.
 
 Repository:
