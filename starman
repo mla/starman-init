@@ -17,10 +17,9 @@
 HOME=/home/myhome
 APP_HOME=$HOME/sites/myapp
 APP=$APP_HOME/app.psgi
-APP_NAME=`basename $0`
+APP_NAME=$(basename $(readlink -f $0))
 START_SERVER=$APP_HOME/vendor/perl5/bin/start_server
 STARMAN=$APP_HOME/vendor/perl5/bin/starman
-PLACK_ENV=deployment
 PORT=5000
 WORKERS=32
 USER=nobody
@@ -33,7 +32,7 @@ LOGDIR=/var/log/$APP_NAME
 
 cd $HOME || exit 3 
 
-# Use local site perl
+# configure app perl
 export PATH=$HOME/.plenv/bin:/sbin:/bin:/usr/bin:/usr/sbin
 eval "$(plenv init -)"
 
@@ -73,7 +72,6 @@ start(){
           --group $GROUP \
           --error-log $LOGDIR/error.log \
           --access-log $LOGDIR/access.log \
-          --env $PLACK_ENV \
           $APP \
           &
 
